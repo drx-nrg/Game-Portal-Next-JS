@@ -20,7 +20,6 @@ export default function SignIn(){
         },
         onSubmit: () => {
             const { username, password } = credentials.values;
-            console.log(credentials.values)
             submitForm({
                 uri: "auth/signin",
                 method: "POST",
@@ -45,6 +44,7 @@ export default function SignIn(){
             }).then((result: any) => {
                 if(result.isConfirmed){
                     localStorage["portalToken"] = res.data.token;
+                    localStorage["username"] = res.data.username;
                     router.push('/discover');
                     router.refresh();
                 }

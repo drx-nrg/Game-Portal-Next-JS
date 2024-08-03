@@ -6,11 +6,13 @@ import { useState, useEffect } from 'react';
 
 import Button from '../Button'
 import Skeleton from '../Skeleton'
+import PageHeader from '../PageHeader'
 import Breadcrumbs from '../navigator/Breadcrumbs';
 import { usePathname, useRouter, useSearchParams } from 'next/navigation';
 import Swal from 'sweetalert2';
 import GameCard from './GameCard';
 import PaginateNavigator from '../navigator/Pagination';
+import { handleUnauthorizedUser } from '@/lib/authentication';
 
 export interface Game {
     slug: string,
@@ -48,22 +50,8 @@ export default function GameCollection() {
             method: "index",
             uri: `games?page=${page}&size=${10}&sortBy=${sortBy}&sortDir=${sortDir}&search=${search ? search : ""}`,
             id: 0,
-            authToken: localStorage["portalToken"],
             callback: setGameData,
-            onUnauthorized: () => {
-                Swal.fire({
-                    title: "Error!",
-                    text: "Session token has expired",
-                    icon: "error",
-                    showCancelButton: false,
-                    showConfirmButton: true
-                }).then(result => {
-                    if (result.isConfirmed) {
-                        localStorage.removeItem("portalToken");
-                        router.push('/auth/signin');
-                    }
-                })
-            },
+            onUnauthorized: () => handleUnauthorizedUser(router),
             onError: (error) => {
                 console.log(error);
             }
@@ -89,11 +77,7 @@ export default function GameCollection() {
     return (
         <>
             <div className="top-bar w-full px-24 grid lg:grid-cols-3 sm:grid-cols-1 items-center mb-5 gap-5">
-                <div className="left-bar flex-1">
-                    <Breadcrumbs path={pathname} />
-                    <h1 className="text-3xl font-semibold font-['Montserrat']">Discover Games</h1>
-                    <p className="text-slate-600 mb-5">Discover all the game</p>
-                </div>
+                <PageHeader title="Discover Games" subtitle="Discover and find all the game" pathname={pathname} withBreadcrumbs={true} />
                 <div className="middle-bar flex-1 flex flex-row items-center gap-3">
                     <Button type="button" handleClick={() => setSortDir(prev => prev === "asc" ? "desc" : "asc")}><i className={`bi ${sortDir === "asc" ? "bi-sort-alpha-down" : "bi-sort-alpha-up"}`}></i></Button>
                     <select name="sortBy" value={sortBy} onChange={(e) => setSortBy(e.target.value)} className="outline-none border border-slate-300 rounded-md p-2 text-slate-900">

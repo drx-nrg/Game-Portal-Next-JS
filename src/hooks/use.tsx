@@ -18,7 +18,6 @@ interface FetchAlternate{
     uri: string,
     id: number,
     key?: string,
-    authToken: string,
     callback: React.Dispatch<React.SetStateAction<any>>,
     onUnauthorized: () => void
     onError: (error: any) => void
@@ -63,11 +62,11 @@ export const useFetchData = ({ queryKey, uri, contentType, authToken }: any) => 
     queryKey: ['data', queryKey],
 });
 
-export const useFetch = async ({ method, uri, id, key, authToken, callback, onUnauthorized, onError } : FetchAlternate) => {
+export const useFetch = async ({ method, uri, id, key, callback, onUnauthorized, onError } : FetchAlternate) => {
     try{
         const response = await Api.get(method === "index" ? `${uri}` : `${uri}/${id}`, {
             headers: {
-                "Authorization": `Bearer ${authToken}`
+                "Authorization": `Bearer ${localStorage["portalToken"]}`
             }
         });
         console.log(uri)
